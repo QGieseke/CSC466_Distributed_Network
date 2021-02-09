@@ -1,0 +1,49 @@
+\documentclass{article}
+
+\oddsidemargin  -0.25in
+\evensidemargin -0.25in
+\marginparwidth 40pt
+\marginparsep 10pt
+\topmargin -0.5in
+\headsep 0pt
+\textheight 9.5in
+\textwidth 7.0in
+
+\begin{document}
+
+\title{Dumb Distributed Network}
+
+\author{Quinn Gieseke (V00884671), CSC 466}
+
+\date{\today}
+
+\maketitle
+\section{Problem statement}
+As computers have miniaturized and grown more efficient, networks have needed to advance to include many computing units of varying power and complexity. One particular issue that has arisen is existing network protocols are ill suited to large networks of low power computers, as seen in such instances as smart homes and distributed sensor networks. The relative scarcity of stable links and a heavy reliance on power savings means that protocols like TCP become nearly unusable.
+
+\section{Existing Solutions}
+As interest over IOT devices has grown, many protocols have risen to attempt to overcome these challenges. 6LoWPAN is an extension on IPv6 to allow sporadically connected devices to efficiently connect. Z-Wave is a closed source mesh network relying on low-power radio transmissions instead of the more common WiFi or Bluetooth standards, giving it some advantages in data transfer rates. Zigbee is a similar protocol, a main competitor.
+
+A major drawback for each of these existing standards is that they each require fully featured microcontrollers at every node in the network in order to receive, transmit, and broadcast messages in order to maintain network connectivity. This requirement necessarily limits the simplicity of edge nodes due to required computing power and energy consumption needed.
+
+\section{My Approach}
+The main idea behind my approach is to break one of the fundamental assumptions of a network, and that is removing the need for two-way communication between edge nodes. By requiring each distributed sensor to only broadcast, and never needing to listen to replies, both the necessary power consumption and computational power should plummet, enabling the use of truly tiny and low power solutions. 
+
+Of course, the network as a whole must still be smart, so I propose a 2-layer solution, where the dumb edge nodes simply broadcast their status, and smarter internal nodes receive those broadcasts and pass them on to their intended destination. However, since smart internal nodes may be relatively scarce in comparison to edge nodes, I believe this is a useful trade-off. Internal nodes would be responsible for
+\begin{enumerate}
+	\item Reliable transmission of data through the internal network
+	\item Monitoring of status of edge nodes
+	\item Flexible receiving of edge node transmissions (no strict mapping between edge and internal nodes)
+	\item High scalability for reeving and transmitting data.
+\end{enumerate}
+
+\section{Rough timetable}
+
+\begin{enumerate}
+
+\end{enumerate}
+
+\section{URL}
+test test test.test
+
+\end{document}
