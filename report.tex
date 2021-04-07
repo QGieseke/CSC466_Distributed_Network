@@ -1,0 +1,116 @@
+\documentclass{article}
+
+\oddsidemargin  -0.25in
+\evensidemargin -0.25in
+\marginparwidth 40pt
+\marginparsep 10pt
+\topmargin -0.5in
+\headsep 0pt
+\textheight 9.5in
+\textwidth 7.0in
+
+\begin{document}
+
+\title{Dumb Distributed Network}
+
+\author{Quinn Gieseke (V00884671), CSC 466}
+
+\date{\today}
+
+\maketitle
+\newpage
+%Per smart node sensor reads per second:	~4200 w/ replication across nodes (Fully connected)
+%(~13 or more)
+%Description (10 min)
+
+\section{Final motivation}
+\begin{itemize}
+	\item Monitor status of sensors
+	\item To allow for every smart node to have as current a value for every sensor in the network as possible.
+	\item Ensure that data is transmitted reliably between smart nodes.
+	\item Ensure that data becomes stale quickly.
+	\item Must ensure that stale data does not persist, ie gets distributed between nodes.
+	\item Be scalable.
+	\item Have low overhead.
+\end{itemize}
+
+\newpage
+
+\section{Sensor Description}
+\begin{itemize}
+	\item Produces single integer value for data (can be expanded later).
+	\item Monotonic counter per data output.
+\end{itemize}
+
+\subsection{I/O}
+	Write only datagram.
+
+\newpage
+
+\section{Smart Node Description}
+\begin{itemize}
+	\item Monotonic counter per sensor read.
+	\item Keeps state for every sensor 
+		\subitem Last data value 
+		\subitem Last sensor tick 
+		\subitem Approximate last node tick
+	\item Bitmap for stale sensors
+\end{itemize}
+\subsection{I/O}
+	Dedicated threads for sensor reads and node reads.
+
+	Produces a heartbeat pulse every second which includes(for every up to date sensor):
+\begin{itemize}
+	\item Sensor data
+	\item Sensor tick for data
+	\item Negative offset for node tick
+\end{itemize}
+	
+\newpage
+
+\section{Simulator Description}
+\begin{itemize}
+	\item Routes all information through named pipes
+	\item Maps locality, so that sensors and nodes only communicate through spacially near nodes. %updates randomly once per second
+	\item Incurs message drop at set rate.
+\end{itemize}
+
+\newpage
+
+\section{Tuneable parameters}
+\begin{itemize}
+	\item Number of nodes and sensors %(Quickly exhausts a single computers resources
+	\item How long it takes for a bit of sensor data to become stale (in Node Ticks) %(Ideally set to around 2-3x the heartbeat timeout
+	\item Maximum size of spacial map
+	\item	Maximum distance for sensors/nodes to be able to transmit	(Ideally recieve roughly full coverage between the two)
+	\item	Drop rate for communication.
+\end{itemize}
+
+\newpage
+\section{Results}
+	Each smart node is capable of sustaining ~4200 sensor reads per second (scaled to 4 smart nodes).
+	
+	To get around this, each sensor created new results at 1000 times per second, instead of upping the number of sensors to reduce operating system overhead.
+	
+	All further tests were restricted by my CPU or simulator code, not the actual protocol.
+
+
+\newpage
+\section{Further steps}
+
+%	Easy:
+%		Increasing the amount of data to share beyond a single int, would just require the sensor/smart node agreeing on data trasfer format
+%		Testing on distributed hardware for more realistic results.
+%		Check for tick overflows for long-running simulations
+%	Medium:
+%		More accurate performance data - will drastically increase overhead of processes
+%	Hard:
+%		Allow for nodes to share stale data in order to have a more whole view of past time steps (closer to full database replication)
+%		Allow for data outflow from one or more nodes for long term storage
+
+
+\newpage
+\section{URL}
+https://github.com/QGieseke/CSC466\_Distributed\_Network
+
+\end{document}

@@ -1,0 +1,57 @@
+Per smart node sensor reads per second:	~4200 w/ replication across nodes (Fully connected)
+(~13 or more)
+Description (10 min)
+
+Final motivation:
+To allow for every smart node to have as current a value for every sensor in the network as possible.
+Data becomes stale quickly.
+Must ensure that stale data does not persist in the network.
+
+Sensor: 
+	Produces single integer value for data (can be expanded
+	Monotonic counter for stale data
+
+Node:
+	Monotonic counter per sensor read
+	Keeps state for every sensor last data + last sensor tick + approx last node tick
+	Bitmap for stale sensors (sensors with an old enough tick value)
+	Reads as fast as sensor data is produced
+	Produces a heartbeat pulse ~every second which includes:
+		Non-stale sensor data
+		sensor tick for data
+		negative offset for node tick
+	
+	Reads all Node heartbeats as they appear
+
+Simulator:
+	Routes all information (Sensor->Node), (Node->Node) through named pipes/FIFO files
+	Maps locality, so that sensors and nodes only communicate through spacially near nodes.
+	Incurs message drop at set rate
+
+Tuneable parameters:
+	Number of nodes / sensors (Quickly exhausts a single computers resources
+	How long it takes for a bit of sensor data to become stale (Ideally set to around 2-3x the heartbeat timeout
+	Maximum size of spacial map
+	Maximum distance for sensors/nodes to be able to transmit	(Ideally recieve roughly full coverage between the two)
+	Drop rate for communication.
+
+Results:
+	Each smart node is capable of sustaining ~4200 sensor reads per second (scaled to 4 smart nodes)
+	To get around this, each sensor created new results at 1000 times per second, instead of upping the number of sensors to reduce operating system overhead
+	All further tests were restricted by my CPU or simulator code, not the actual protocol.
+
+
+
+Further steps:
+	Easy:
+		Increasing the amount of data to share beyond a single int, would just require the sensor/smart node agreeing on data trasfer format
+		Testing on distributed hardware for more realistic results.
+		Check for tick overflows for long-running simulations
+
+	Medium:
+		More accurate performance data - will drastically increase overhead of processes
+
+	Hard:
+		Allow for nodes to share stale data in order to have a more whole view of past time steps (closer to full database replication)
+		Allow for data outflow from one or more nodes for long term storage
+
